@@ -20,6 +20,7 @@ class Patient(BaseModel):
     name: str
     surename: str
 
+Message = "You need to be logged in"        
 def verify(credentials: HTTPBasicCredentials = Depends(security)):
     if (secrets.compare_digest(credentials.username, "trudnY") and secrets.compare_digest(credentials.password, "PaC13Nt")):
         session_token = sha256(bytes(f"{credentials.username}{credentials.password}{app.secret_key}", encoding='utf8')).hexdigest()
@@ -40,10 +41,8 @@ def verify_cookie(session_token: str = Cookie(None)):
 @app.post("/patient")
 def add_patient(response: Response, request: Patient, session_token: str = Depends(verify_cookie)):
     if session_token is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not logged in user",
-        )
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        return Message
     id=f"id_{app.last_patient_id}"
     app.last_patient_id+=1
     app.patients[id]=request.dict()
@@ -53,10 +52,8 @@ def add_patient(response: Response, request: Patient, session_token: str = Depen
 @app.get("/patient")
 def all_patients(response: Response, session_token: str = Depends(verify_cookie)):
     if session_token is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not logged in user",
-        )
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        return Message
     if len(app.patients) != 0:
         return app.patients
     response.status_code = status.HTTP_204_NO_CONTENT
@@ -64,10 +61,8 @@ def all_patients(response: Response, session_token: str = Depends(verify_cookie)
 @app.get("/patient/{id}")
 def get_patient(id: str, response: Response, session_token: str = Depends(verify_cookie)):
     if session_token is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not logged in user",
-        )
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        return Message
     if id in app.patients:
         return app.patients[id]
     response.status_code = status.HTTP_204_NO_CONTENT
@@ -75,10 +70,8 @@ def get_patient(id: str, response: Response, session_token: str = Depends(verify
 @app.delete("/patient/{id}")
 def delete_patient(id: str, response: Response, session_token: str = Depends(verify_cookie)):
     if session_token is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not logged in user",
-        )
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        return Message
     app.patients.pop(pid, None)
     response.status_code = status.HTTP_204_NO_CONTENT
 
