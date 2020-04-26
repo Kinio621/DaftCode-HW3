@@ -8,7 +8,7 @@ from pydantic import BaseModel
 import secrets
 
 app = FastAPI()
-
+MESSAGE_UNAUTHORIZED = "Log in to access this page."
 app.secret_key = "very constatn and random secret, best 64 characters"
 app.sessions={}
 app.users={"trudnY":"PaC13Nt"}
