@@ -80,8 +80,7 @@ def delete_patient(id: str, response: Response, session_token: str = Depends(ver
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Not logged in user",
         )
-    if id in app.patients:
-        app.patients.pop(id)
+    app.patients.pop(pid, None)
     response.status_code = status.HTTP_204_NO_CONTENT
 
 @app.post("/login")
