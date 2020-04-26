@@ -62,26 +62,21 @@ def get_all_patients(response: Response, session_token: str = Depends(verify_coo
         return app.patients
     response.status_code = status.HTTP_204_NO_CONTENT
 
-@app.get("/patient/{id}")
-def get_patient(id: str, response: Response, session_token: str = Depends(verify_cookie)):
+@app.get("/patient/{pid}")
+def get_patient(pid: str, response: Response, session_token: str = Depends(verify_cookie)):
     if session_token is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not logged in user",
-        )
-    if id in app.patients:
-        return app.patients[id]
+        response.status_code = status.HTTP_401_UNAUTHORIZED
+        return MESSAGE_UNAUTHORIZED
+    if pid in app.patients:
+        return app.patients[pid]
     response.status_code = status.HTTP_204_NO_CONTENT
 
-@app.delete("/patient/{id}")
-def delete_patient(id: str, response: Response, session_token: str = Depends(verify_cookie)):
+@app.delete("/patient/{pid}")
+def remove_patient(pid: str, response: Response, session_token: str = Depends(verify_cookie)):
     if session_token is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not logged in user",
-        )
-    if id in app.patients:
-        app.patients.pop(id)
+        response.status_code = status.HTTP_401_UNAUTHORIZED
+        return MESSAGE_UNAUTHORIZED
+    app.patients.pop(pid, None)
     response.status_code = status.HTTP_204_NO_CONTENT
 
 @app.post("/login")
