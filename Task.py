@@ -1,16 +1,31 @@
 from hashlib import sha256
-from fastapi import FastAPI, Response, Cookie, HTTPException
+from fastapi import FastAPI, Response, Cookie, HTTPException, status, Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from starlette.responses import RedirectResponse
+
+import secrets
 
 app = FastAPI()
 
-@app.post("/login")
-def login(credentials: HTTPBasicCredentials = HTTPBasic()):
+app.secret_key = "very constatn and random secret, best 64 characters"
+app.tokens_list = []
+security = HTTPBasic()
+
+def verify(credentials: HTTPBasicCredentials = Depends(security)):
     if(secrets.compare_digest(credentials.username, "trudnY") and secrets.compare_digest(credentials.password, "PaC13Nt")):
-        response=RedirectResponse(url='/welcome')
-        return response
+        return credentials.username
     else:
-        raise HTTPException(status=401, detail='failed to log in')
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail='wrong username or password')
+
+@app.post("/login")
+def login(user:str, passwd: str, response: Response, verify_user = Depends(verify)):
+     session_token = sha256(bytes(f"{user}{passwd}{app.secret_key}", encoding='utf8')).hexdigest()
+     app.tokens_list.append(session_token)
+
+     response.set_cookie(key="session_token", value=session_token)
+     response = RedirectResponse(url = "/welcome")
+     response.status_code = status.HTTP_302_FOUND
+     return response
 
 @app.get("/welcome")
 def welcome():
