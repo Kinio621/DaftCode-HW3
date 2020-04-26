@@ -1,1 +1,1 @@
-web: uvicorn Task:app --host=0.0.0.0 --port=${PORT:-5000}
+web: uvicorn Task:app --workers 1 --host=0.0.0.0 --port=${PORT:-5000}
