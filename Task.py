@@ -40,7 +40,7 @@ def verify_cookie(session_token: str = Cookie(None)):
     return session_token
 
 @app.post("/patient")
-def add_patient(response: Response, rq: PatientRq, session_token: str = Depends(verify_cookie)):
+def add_patient(response: Response, rq: Patient, session_token: str = Depends(verify_cookie)):
     if session_token is None:
         response.status_code = status.HTTP_401_UNAUTHORIZED
         return MESSAGE_UNAUTHORIZED
