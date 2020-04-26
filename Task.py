@@ -17,6 +17,8 @@ app.patients={}
 security = HTTPBasic()
 templates = Jinja2Templates(directory="templates")
 
+MESSAGE_UNAUTHORIZED = "Log in to access this page."
+
 class Patient(BaseModel):
     name: str
     surename: str
@@ -52,12 +54,10 @@ def add_patient(response: Response, rq: Patient, session_token: str = Depends(ve
     response.headers["Location"] = f"/patient/{id}"
 
 @app.get("/patient")
-def all_patients(response: Response, session_token: str = Depends(verify_cookie)):
+def get_all_patients(response: Response, session_token: str = Depends(check_cookie)):
     if session_token is None:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Not logged in user",
-        )
+        response.status_code = status.HTTP_401_UNAUTHORIZED
+        return MESSAGE_UNAUTHORIZED
     if len(app.patients) != 0:
         return app.patients
     response.status_code = status.HTTP_204_NO_CONTENT
