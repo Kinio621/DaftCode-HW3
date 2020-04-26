@@ -23,7 +23,6 @@ def login(user:str, passwd: str, response: Response, verify_user = Depends(verif
      app.tokens_list.append(session_token)
 
      response.set_cookie(key="session_token", value=session_token)
-     RedirectResponse(url = "/welcome")
      response.status_code = status.HTTP_302_FOUND
      response.headers['Location'] = "/welcome"
      return response
