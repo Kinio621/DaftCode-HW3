@@ -5,12 +5,6 @@ from pydantic import BaseModel
 from hashlib import sha256
 import secrets
 
-# for debug
-'''from fastapi.encoders import jsonable_encoder
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse'''
-# end
-
 app = FastAPI()
 security = HTTPBasic()
 templates = Jinja2Templates(directory="templates")
@@ -21,16 +15,6 @@ app.users={"trudnY":"PaC13Nt"}
 app.sessions={}
 
 MESSAGE_UNAUTHORIZED = "Log in to access this page."
-
-# for debug
-'''@app.exception_handler(RequestValidationError)
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    print(jsonable_encoder({"detail": exc.errors(), "body": exc.body}))
-    return JSONResponse(
-        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-        content=jsonable_encoder({"detail": exc.errors(), "body": exc.body}),
-    )'''
-# end
 
 @app.get("/")
 def root():
@@ -66,15 +50,12 @@ def login_check_cred(credentials: HTTPBasicCredentials = Depends(security)):
     app.sessions[session_token]=credentials.username
     return session_token
 
-
-#@app.get("/login") # for easier testing in the browser
 @app.post("/login")
 def login(response: Response, session_token: str = Depends(login_check_cred)):
     response.status_code = status.HTTP_302_FOUND
     response.headers["Location"] = "/welcome"
     response.set_cookie(key="session_token", value=session_token)
 
-#@app.get("/logout") # for easier testing in the browser
 @app.post("/logout")
 def logout(response: Response, session_token: str = Depends(check_cookie)):
     if session_token is None:
