@@ -39,7 +39,7 @@ def verify_cookie(session_token: str = Cookie(None)):
     return session_token
 
 @app.post("/patient")
-def add_patient(response: Response, request: Patient, session_token: str = Depends(verify_cookie)):
+def add_patient(response: Response, rq: Patient, session_token: str = Depends(verify_cookie)):
     if session_token is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -47,7 +47,7 @@ def add_patient(response: Response, request: Patient, session_token: str = Depen
         )
     id=f"id_{app.last_patient_id}"
     app.last_patient_id+=1
-    app.patients[id]=request.dict()
+    app.patients[id]=rq.dict()
     response.status_code = status.HTTP_302_FOUND
     response.headers["Location"] = f"/patient/{id}"
 
