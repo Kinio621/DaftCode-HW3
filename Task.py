@@ -45,7 +45,7 @@ def add_patient(response: Response, request: Patient, session_token: str = Depen
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Not logged in user",
         )
-    id=app.last_patient_id
+    id=f"id_{app.last_patient_id}"
     app.last_patient_id+=1
     app.patients[id]=request.dict()
     response.status_code = status.HTTP_302_FOUND
@@ -58,7 +58,9 @@ def all_patients(response: Response, session_token: str = Depends(verify_cookie)
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Not logged in user",
         )
-    return app.patients
+    if len(app.patients) != 0:
+        return app.patients
+    response.status_code = status.HTTP_204_NO_CONTENT
 
 @app.get("/patient/{id}")
 def get_patient(id: str, response: Response, session_token: str = Depends(verify_cookie)):
