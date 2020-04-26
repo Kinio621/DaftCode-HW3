@@ -1,5 +1,5 @@
 from hashlib import sha256
-from fastapi import FastAPI, Response, Cookie, HTTPException, status, Depends
+from fastapi import FastAPI, Response, Request, Cookie, HTTPException, status, Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from starlette.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -48,8 +48,8 @@ def logout(response: Response, session_token: str = Depends(verify_cookie)):
     app.sessions.pop(session_token)
 
 @app.get("/welcome")
-def welcome(request: Request, session_token = Cookie(None)):
-    if session_token not in app.sessions
+def welcome(request: Request, session_token: str = Depends(verify_cookie)):
+    if session_token is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Not logged in user",
