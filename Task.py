@@ -28,8 +28,10 @@ def login(user:str, passwd: str, response: Response, verify_user = Depends(verif
      return response
 
 @app.get("/welcome")
-def welcome():
-    return {"message": "Hello there"}
+def welcome_to_the_jungle(request: Request, s_token = Cookie(None)):
+	if s_token not in app.tokens:
+		raise HTTPException(status_code=401, detail="dostęp wzbroniony")
+	return template.TemplateResponse("template1.html", {"request": request, "user": "trudnY"})
 
 @app.get("/")
 def default():
