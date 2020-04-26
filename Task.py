@@ -54,7 +54,7 @@ def add_patient(response: Response, rq: Patient, session_token: str = Depends(ve
     response.headers["Location"] = f"/patient/{id}"
 
 @app.get("/patient")
-def get_all_patients(response: Response, session_token: str = Depends(check_cookie)):
+def get_all_patients(response: Response, session_token: str = Depends(verify_cookie)):
     if session_token is None:
         response.status_code = status.HTTP_401_UNAUTHORIZED
         return MESSAGE_UNAUTHORIZED
