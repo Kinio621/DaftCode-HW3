@@ -51,6 +51,15 @@ def add_patient(response: Response, request: Patient, session_token: str = Depen
     response.status_code = status.HTTP_302_FOUND
     response.headers["Location"] = f"/patient/{id}"
 
+@app.get("/patient")
+def all_patients(response: Response, session_token: str = Depends(verify_cookie)):
+    if session_token is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not logged in user",
+        )
+    return app.patients
+
 @app.get("/patient/{id}")
 def get_patient(id: str, response: Response, session_token: str = Depends(verify_cookie)):
     if session_token is None:
@@ -60,6 +69,21 @@ def get_patient(id: str, response: Response, session_token: str = Depends(verify
         )
     if id in app.patients:
         return app.patients[id]
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_204_NO_CONTENT,
+            detail="No patient with such id",
+        )
+
+@app.delete("/patient/{id}")
+def delete_patient(id: str, response: Response, session_token: str = Depends(verify_cookie)):
+    if session_token is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not logged in user",
+        )
+    if id in app.patients:
+        app.patients.pop(id)
     else:
         raise HTTPException(
             status_code=status.HTTP_204_NO_CONTENT,
