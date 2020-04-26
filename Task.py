@@ -13,7 +13,7 @@ app.users={"trudnY":"PaC13Nt"}
 security = HTTPBasic()
 
 def verify(credentials: HTTPBasicCredentials = Depends(security)):
-    if (secrets.compare_digest(credentials.username, "trudnY") and secrets.compare_digest(credentials.password, "PaC13Nt"):
+    if (secrets.compare_digest(credentials.username, "trudnY") and secrets.compare_digest(credentials.password, "PaC13Nt")):
         session_token = sha256(bytes(f"{credentials.username}{credentials.password}{app.secret_key}", encoding='utf8')).hexdigest()
         app.sessions[session_token]=credentials.username
         return session_token
