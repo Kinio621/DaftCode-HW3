@@ -23,15 +23,14 @@ def login(user:str, passwd: str, response: Response, verify_user = Depends(verif
      app.tokens_list.append(session_token)
 
      response.set_cookie(key="session_token", value=session_token)
-     response = RedirectResponse(url = "/welcome")
+     RedirectResponse(url = "/welcome")
      response.status_code = status.HTTP_302_FOUND
+     response.headers['Location'] = "/welcome"
      return response
 
 @app.get("/welcome")
-def welcome_to_the_jungle(request: Request, s_token = Cookie(None)):
-	if s_token not in app.tokens:
-		raise HTTPException(status_code=401, detail="dostęp wzbroniony")
-	return template.TemplateResponse("template1.html", {"request": request, "user": "trudnY"})
+def welcome():
+    return {"message": "Hello there"}
 
 @app.get("/")
 def default():
