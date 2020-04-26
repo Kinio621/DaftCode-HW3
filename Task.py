@@ -48,7 +48,7 @@ def logout(response: Response, session_token: str = Depends(verify_cookie)):
     app.sessions.pop(session_token)
 
 @app.get("/welcome")
-def welcome(request: Request, response: Response, session_token: str = Depends(check_cookie)):
+def welcome(request: Request, response: Response, session_token: str = Depends(verify_cookie)):
     if session_token is None:
         response.status_code = status.HTTP_401_UNAUTHORIZED
         return MESSAGE_UNAUTHORIZED
