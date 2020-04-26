@@ -42,36 +42,42 @@ def add_patient(response: Response, request: Patient, session_token: str = Depen
     if session_token is None:
         response.status_code = status.HTTP_401_UNAUTHORIZED
         return MESSAGE_UNAUTHORIZED
-    pid=f"id_{app.next_patient_id}"
-    app.patients[pid]=rq.dict()
-    response.status_code = status.HTTP_302_FOUND
-    response.headers["Location"] = f"/patient/{pid}"
+    id=f"id_{app.last_patient_id}"
     app.last_patient_id+=1
-
+    app.patients[id]=request.dict()
+    response.status_code = status.HTTP_302_FOUND
+    response.headers["Location"] = f"/patient/{id}"
+    
 @app.get("/patient")
 def get_all_patients(response: Response, session_token: str = Depends(verify_cookie)):
     if session_token is None:
-        response.status_code = status.HTTP_401_UNAUTHORIZED
-        return MESSAGE_UNAUTHORIZED
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not logged user",
+        )
     if len(app.patients) != 0:
         return app.patients
     response.status_code = status.HTTP_204_NO_CONTENT
 
-@app.get("/patient/{pid}")
-def get_patient(pid: str, response: Response, session_token: str = Depends(verify_cookie)):
+@app.get("/patient/{id}")
+def get_patient(id: str, response: Response, session_token: str = Depends(verify_cookie)):
     if session_token is None:
-        response.status_code = status.HTTP_401_UNAUTHORIZED
-        return MESSAGE_UNAUTHORIZED
-    if pid in app.patients:
-        return app.patients[pid]
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not logged user",
+        )
+    if id in app.patients:
+        return app.patients[id]
     response.status_code = status.HTTP_204_NO_CONTENT
 
-@app.delete("/patient/{pid}")
-def remove_patient(pid: str, response: Response, session_token: str = Depends(verify_cookie)):
+@app.delete("/patient/{id}")
+def remove_patient(id: str, response: Response, session_token: str = Depends(verify_cookie)):
     if session_token is None:
-        response.status_code = status.HTTP_401_UNAUTHORIZED
-        return MESSAGE_UNAUTHORIZED
-    app.patients.pop(pid, None)
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not logged user",
+        )
+    app.patients.pop(id, None)
     response.status_code = status.HTTP_204_NO_CONTENT
 
 @app.post("/login")
