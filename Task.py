@@ -36,9 +36,9 @@ def login(response: Response, session_token: str = Depends(verify)):
 
 @app.post("/logout")
 def logout(response: Response, session_token: str = Depends(verify_cookie)):
-     if session_token is None:
+    if session_token is None:
         response.status_code = status.HTTP_401_UNAUTHORIZED
-        return "No access"
+        return {"message": "No access"}
     response.status_code = status.HTTP_302_FOUND
     response.headers["Location"] = "/"
     app.sessions.pop(session_token)
