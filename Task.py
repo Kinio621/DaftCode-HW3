@@ -93,7 +93,7 @@ def get_method(request: Request):
 
 class PatientRq(BaseModel):
     name: str
-    surename: str
+    surname: str
 
 # note: it is possible to use "name: str = Body(None), surname..." instead of "rq: PatientRq"
 @app.post("/patient")
