@@ -12,25 +12,21 @@ app.sessions={}
 app.users={"trudnY":"PaC13Nt"}
 security = HTTPBasic()
 
-def login_check_cred(credentials: HTTPBasicCredentials = Depends(security)):
-    correct = False
-    for username, password in app.users.items():
-        correct_username = secrets.compare_digest(credentials.username, username)
-        correct_password = secrets.compare_digest(credentials.password, password)
-        if (correct_username and correct_password):
-            correct = True
-    if not correct:
+def verify(credentials: HTTPBasicCredentials = Depends(security)):
+    if (secrets.compare_digest(credentials.username, "trudnY") and secrets.compare_digest(credentials.password, "PaC13Nt"):
+        session_token = sha256(bytes(f"{credentials.username}{credentials.password}{app.secret_key}", encoding='utf8')).hexdigest()
+        app.sessions[session_token]=credentials.username
+        return session_token
+
+    else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect login or password",
             headers={"WWW-Authenticate": "Basic"},
         )
-    session_token = sha256(bytes(f"{credentials.username}{credentials.password}{app.secret_key}", encoding='utf8')).hexdigest()
-    app.sessions[session_token]=credentials.username
-    return session_token
-
+   
 @app.post("/login")
-def login(response: Response, session_token: str = Depends(login_check_cred)):
+def login(response: Response, session_token: str = Depends(verify)):
     response.status_code = status.HTTP_302_FOUND
     response.headers["Location"] = "/welcome"
     response.set_cookie(key="session_token", value=session_token)
