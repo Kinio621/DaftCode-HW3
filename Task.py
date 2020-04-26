@@ -50,8 +50,10 @@ def logout(response: Response, session_token: str = Depends(verify_cookie)):
 @app.get("/welcome")
 def welcome(request: Request, response: Response, session_token: str = Depends(verify_cookie)):
     if session_token is None:
-        response.status_code = status.HTTP_401_UNAUTHORIZED
-        return MESSAGE_UNAUTHORIZED
+       raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not logged in user",
+        )
     return templates.TemplateResponse("welcome.html", {"request": request, "user": "trudnY"})
 
 @app.get("/")
