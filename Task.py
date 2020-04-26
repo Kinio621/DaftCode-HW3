@@ -54,7 +54,8 @@ def welcome(request: Request, response: Response, session_token: str = Depends(v
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Not logged in user",
         )
-    return templates.TemplateResponse("welcome.html", {"request": request, "user": "trudnY"})
+    username = app.sessions[session_token]
+    return templates.TemplateResponse("welcome.html", {"request": request, "user": username})
 
 @app.get("/")
 def default():
