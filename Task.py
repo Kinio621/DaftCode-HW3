@@ -1,7 +1,6 @@
 from hashlib import sha256
 from fastapi import FastAPI, Response, Request, Cookie, HTTPException, status, Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from starlette.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 
