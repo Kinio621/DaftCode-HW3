@@ -49,7 +49,7 @@ def logout(response: Response, session_token: str = Depends(verify_cookie)):
 
 @app.get("/welcome")
 def welcome(request: Request, session_token = Cookie(None)):
-    if session_token not in api.sessions
+    if session_token not in app.sessions
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Not logged in user",
