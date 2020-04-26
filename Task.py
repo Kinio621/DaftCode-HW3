@@ -25,6 +25,7 @@ def verify(credentials: HTTPBasicCredentials = Depends(security)):
             detail="Incorrect login or password",
             headers={"WWW-Authenticate": "Basic"},
         )
+        
 def verify_cookie(session_token: str = Cookie(None)):
     if session_token not in app.sessions:
         session_token = None
