@@ -8,7 +8,7 @@ import secrets
 
 app = FastAPI()
 
-app.secret_key = "very constatn and random secret, best 64 characters"
+app.secret_key = "wUYwdjICbQP70WgUpRajUwxnGChAKmRtfQgYASazava4p5In7pZpFPggdB4JDjlv"
 app.sessions={}
 app.users={"trudnY":"PaC13Nt"}
 app.last_patient_id=0
