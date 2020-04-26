@@ -24,6 +24,7 @@ def login(user:str, passwd: str, response: Response, verify_user = Depends(verif
 
      response.set_cookie(key="session_token", value=session_token)
      response = RedirectResponse(url = "/welcome")
+     response.status_code = status.HTTP_302_FOUND
      return response
 
 @app.get("/welcome")
