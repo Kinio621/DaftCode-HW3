@@ -19,7 +19,7 @@ templates = Jinja2Templates(directory="templates")
 
 class Patient(BaseModel):
     name: str
-    surename: str
+    surname: str
 
 def verify(credentials: HTTPBasicCredentials = Depends(security)):
     if (secrets.compare_digest(credentials.username, "trudnY") and secrets.compare_digest(credentials.password, "PaC13Nt")):
