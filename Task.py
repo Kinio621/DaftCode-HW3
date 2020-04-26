@@ -12,7 +12,7 @@ app.secret_key = "very constatn and random secret, best 64 characters"
 app.sessions={}
 app.users={"trudnY":"PaC13Nt"}
 security = HTTPBasic()
-template = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="templates")
 
 def verify(credentials: HTTPBasicCredentials = Depends(security)):
     if (secrets.compare_digest(credentials.username, "trudnY") and secrets.compare_digest(credentials.password, "PaC13Nt")):
@@ -52,8 +52,7 @@ def welcome(request: Request, response: Response, session_token: str = Depends(v
     if session_token is None:
         response.status_code = status.HTTP_401_UNAUTHORIZED
         return MESSAGE_UNAUTHORIZED
-    username = app.sessions[session_token]
-    return templates.TemplateResponse("welcome.html", {"request": request, "user": username})
+    return templates.TemplateResponse("welcome.html", {"request": request, "user": "trudnY"})
 
 @app.get("/")
 def default():
