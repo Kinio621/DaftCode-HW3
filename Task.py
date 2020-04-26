@@ -2,6 +2,7 @@ from hashlib import sha256
 from fastapi import FastAPI, Response, Cookie, HTTPException, status, Depends
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from starlette.responses import RedirectResponse
+from fastapi.templating import Jinja2Templates
 
 import secrets
 
@@ -11,6 +12,7 @@ app.secret_key = "very constatn and random secret, best 64 characters"
 app.sessions={}
 app.users={"trudnY":"PaC13Nt"}
 security = HTTPBasic()
+template = Jinja2Templates(directory="templates")
 
 def verify(credentials: HTTPBasicCredentials = Depends(security)):
     if (secrets.compare_digest(credentials.username, "trudnY") and secrets.compare_digest(credentials.password, "PaC13Nt")):
@@ -37,15 +39,22 @@ def login(response: Response, session_token: str = Depends(verify)):
 @app.post("/logout")
 def logout(response: Response, session_token: str = Depends(verify_cookie)):
     if session_token is None:
-        response.status_code = status.HTTP_401_UNAUTHORIZED
-        return {"message": "No access"}
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not logged in user",
+        )
     response.status_code = status.HTTP_302_FOUND
     response.headers["Location"] = "/"
     app.sessions.pop(session_token)
 
 @app.get("/welcome")
-def welcome():
-    return {"message": "Hello there"}
+def welcome(request: Request, session_token = Cookie(None)):
+    if session_token not in api.sessions
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not logged in user",
+        )
+    return templates.TemplateResponse("welcome.html", {"request": request, "user": username})
 
 @app.get("/")
 def default():
